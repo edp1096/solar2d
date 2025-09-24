@@ -117,7 +117,7 @@ jobs:
         shell: cmd
         run: |
           cd solar2d-source\platform\windows
-          call Build.Tools\VSVars64.bat
+          call Build.Tools\VSVars.bat
           devenv "Corona.Shell.sln" /rebuild "Release|x64"
           devenv "Corona.Simulator.sln" /build "Release|x64"
           devenv "CoronaBuilder.sln" /build "Release|x64"
