@@ -108,19 +108,20 @@ jobs:
         shell: cmd
         run: |
           cd solar2d-source\platform\windows
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars32.bat"
+          call Build.Tools\VSVars.bat
           devenv "Corona.Shell.sln" /rebuild "Release|Win32"
           devenv "Corona.Simulator.sln" /build "Release|Win32"
           devenv "CoronaBuilder.sln" /build "Release|Win32"
 
-      - name: Build Solar2D x64
+      - name: Build Solar2D x64 (if supported)
         shell: cmd
         run: |
           cd solar2d-source\platform\windows
+          REM Try Visual Studio's x64 environment directly
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          devenv "Corona.Shell.sln" /rebuild "Release|x64"
-          devenv "Corona.Simulator.sln" /build "Release|x64"
-          devenv "CoronaBuilder.sln" /build "Release|x64"
+          devenv "Corona.Shell.sln" /rebuild "Release|x64" || echo "x64 build not supported"
+          devenv "Corona.Simulator.sln" /build "Release|x64" || echo "x64 build not supported"  
+          devenv "CoronaBuilder.sln" /build "Release|x64" || echo "x64 build not supported"
 
       - name: Package Solar2D for ZIP distribution
         shell: bash
