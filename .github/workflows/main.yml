@@ -31,13 +31,17 @@ jobs:
       - name: Checkout current repository
         uses: actions/checkout@v4
 
-      - name: Clone Solar2D repository
+      - name: Clone Solar2D repository with submodules
         shell: bash
         run: |
-          git clone --depth 1 ${{ env.SOLAR2D_REPO }} solar2d-source
+          git clone --recursive ${{ env.SOLAR2D_REPO }} solar2d-source
           cd solar2d-source
           echo "Solar2D cloned successfully"
+          echo "Updating submodules..."
+          git submodule update --init --recursive
           ls -la
+          echo "Checking external dependencies..."
+          ls -la external/ || echo "External directory not found"
 
       - name: Set up build environment
         shell: bash
