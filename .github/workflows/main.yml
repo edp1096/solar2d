@@ -128,14 +128,14 @@ jobs:
               cp -r docs staging/Solar2D/
             fi
             cd staging
-            7z a -tzip "../output/Solar2D-Windows-x86-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip" Solar2D/*
+            7z a -tzip "../output/Solar2D-Windows-${{ env.YEAR }}.${{ env.PADDED_BUILD }}.zip" Solar2D/*
             cd ..
           fi
 
       - name: Upload Solar2D Windows artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Solar2D-Windows-x86-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}
+          name: Solar2D-Windows-${{ env.YEAR }}.${{ env.PADDED_BUILD }}
           path: solar2d-source/output/*.zip
 
       - name: Create Release
@@ -143,18 +143,17 @@ jobs:
         uses: softprops/action-gh-release@v2.1.0
         with:
           files: solar2d-source/output/*.zip
-          tag_name: v${{ env.YEAR }}.${{ env.BUILD_NUMBER }}-build-${{ env.PADDED_BUILD }}
-          name: Solar2D Windows Build ${{ env.YEAR }}.${{ env.BUILD_NUMBER }}
+          tag_name: v${{ env.YEAR }}.${{ env.PADDED_BUILD }}
+          name: Solar2D Windows Build ${{ env.YEAR }}.${{ env.PADDED_BUILD }}
           body: |
-            Automated build of Solar2D ${{ env.YEAR }}.${{ env.BUILD_NUMBER }} for Windows
+            Automated build of Solar2D ${{ env.YEAR }}.${{ env.PADDED_BUILD }} for Windows
             
             Built from upstream Solar2D repository
-            Build number: ${{ env.BUILD_NUMBER }}
-            Padded build: ${{ env.PADDED_BUILD }}
+            Build number: ${{ env.PADDED_BUILD }}
             Commit: ${{ github.sha }}
             
             **Download:**
-            - Windows x86 (32-bit): `Solar2D-Windows-x86-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip`
+            - Windows x86 (32-bit): `Solar2D-Windows-${{ env.YEAR }}.${{ env.PADDED_BUILD }}.zip`
             
             This build includes:
             - Solar2D SDK and tools
