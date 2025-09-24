@@ -37,20 +37,13 @@ jobs:
           git clone --recursive ${{ env.SOLAR2D_REPO }} solar2d-source
           cd solar2d-source
           echo "Solar2D cloned successfully"
-          echo "Updating submodules..."
-          git submodule update --init --recursive
-          ls -la
-          echo "Checking external dependencies..."
-          ls -la external/ || echo "External directory not found"
-
-      - name: Set up build environment
+          
+      - name: Initialize build environment
         shell: bash
         run: |
           cd solar2d-source
-          # Run daily environment setup if it exists
-          if [ -f "./tools/GHAction/daily_env.sh" ]; then
-            ./tools/GHAction/daily_env.sh
-          fi
+          # Run the setup script that Solar2D uses
+          ./tools/GHAction/daily_env.sh
 
       - name: Create docs directory and get sample code
         shell: bash
