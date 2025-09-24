@@ -104,11 +104,20 @@ jobs:
           cd solar2d-source\platform\windows
           call UpdateFileVersions.bat %BUILD_NUMBER%
 
-      - name: Build Solar2D
+      - name: Build Solar2D x86
         shell: cmd
         run: |
           cd solar2d-source\platform\windows
           call Build.Tools\VSVars.bat
+          devenv "Corona.Shell.sln" /rebuild "Release|Win32"
+          devenv "Corona.Simulator.sln" /build "Release|Win32"
+          devenv "CoronaBuilder.sln" /build "Release|Win32"
+
+      - name: Build Solar2D x64
+        shell: cmd
+        run: |
+          cd solar2d-source\platform\windows
+          call Build.Tools\VSVars64.bat
           devenv "Corona.Shell.sln" /rebuild "Release|x64"
           devenv "Corona.Simulator.sln" /build "Release|x64"
           devenv "CoronaBuilder.sln" /build "Release|x64"
@@ -119,36 +128,33 @@ jobs:
           cd solar2d-source
           mkdir -p output
           
-          # Create a staging directory for ZIP contents
-          mkdir -p staging/Solar2D
-          
-          # Copy built binaries and required files
-          if [ -d "platform/windows/Bin/Corona.SDK.Installer" ]; then
-            # Copy the built Corona SDK files
-            cp -r platform/windows/Bin/* staging/Solar2D/
-            
-            # Remove installer-specific files we don't need for ZIP
-            rm -f staging/Solar2D/*.msi
-            rm -f staging/Solar2D/*.exe
-            
-            # Copy documentation
-            if [ -d "../docs" ]; then
-              cp -r ../docs staging/Solar2D/
+          # Package x86 version
+          mkdir -p staging-x86/Solar2D
+          if [ -d "platform/windows/Bin" ]; then
+            cp -r platform/windows/Bin/* staging-x86/Solar2D/
+            rm -f staging-x86/Solar2D/*.msi
+            if [ -d "docs" ]; then
+              cp -r docs staging-x86/Solar2D/
             fi
-            
-            # Create ZIP file
-            cd staging
-            7z a -tzip "../output/Solar2D-Windows-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip" Solar2D/*
+            cd staging-x86
+            7z a -tzip "../output/Solar2D-Windows-x86-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip" Solar2D/*
             cd ..
-          else
-            echo "Build directory not found, creating empty ZIP for testing"
-            echo "Solar2D Build ${{ env.YEAR }}.${{ env.BUILD_NUMBER }}" > staging/Solar2D/README.txt
-            cd staging
-            7z a -tzip "../output/Solar2D-Windows-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip" Solar2D/*
+          fi
+          
+          # Package x64 version (if different binaries exist)
+          mkdir -p staging-x64/Solar2D
+          if [ -d "platform/windows/Bin" ]; then
+            cp -r platform/windows/Bin/* staging-x64/Solar2D/
+            rm -f staging-x64/Solar2D/*.msi
+            if [ -d "docs" ]; then
+              cp -r docs staging-x64/Solar2D/
+            fi
+            cd staging-x64
+            7z a -tzip "../output/Solar2D-Windows-x64-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip" Solar2D/*
             cd ..
           fi
 
-      - name: Upload Solar2D Windows artifact
+      - name: Upload Solar2D Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Solar2D-Windows-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}
@@ -169,8 +175,9 @@ jobs:
             Padded build: ${{ env.PADDED_BUILD }}
             Commit: ${{ github.sha }}
             
-            **Download:**
-            - Windows: `Solar2D-Windows-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip`
+            **Downloads:**
+            - Windows x86 (32-bit): `Solar2D-Windows-x86-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip`
+            - Windows x64 (64-bit): `Solar2D-Windows-x64-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip`
             
             This build includes:
             - Solar2D SDK and tools
