@@ -49,15 +49,10 @@ jobs:
         shell: bash
         run: |
           mkdir -p solar2d-source/docs
-          # Get Sample Code
+          # Get Sample Code directly into solar2d-source/docs
           git clone --depth 1 https://github.com/coronalabs/samples-coronasdk.git solar2d-source/docs/SampleCode
           # Clean up git files
           rm -rf solar2d-source/docs/SampleCode/.git solar2d-source/docs/SampleCode/.gitignore
-
-      - name: Move docs outside build directory
-        shell: bash
-        run: |
-          mv solar2d-source/docs ../docs
 
       - name: Get required dependencies
         shell: bash
@@ -114,7 +109,7 @@ jobs:
         run: |
           cd solar2d-source\platform\windows
           call Build.Tools\VSVars.bat
-          devenv "Corona.SDK.sln" /rebuild "Release|x86"
+          devenv "Corona.SDK.sln" /rebuild "Release|x64"
 
       - name: Package Solar2D for ZIP distribution
         shell: bash
