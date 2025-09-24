@@ -109,9 +109,9 @@ jobs:
         run: |
           cd solar2d-source\platform\windows
           call Build.Tools\VSVars.bat
-          devenv "Corona.Shell.sln" /rebuild "Release|Win32"
-          devenv "Corona.Simulator.sln" /build "Release|Win32"
-          devenv "CoronaBuilder.sln" /build "Release|Win32"
+          devenv "Corona.Shell.sln" /rebuild "Release|x64"
+          devenv "Corona.Simulator.sln" /build "Release|x64"
+          devenv "CoronaBuilder.sln" /build "Release|x64"
 
       - name: Package Solar2D for ZIP distribution
         shell: bash
