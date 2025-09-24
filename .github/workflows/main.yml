@@ -104,7 +104,7 @@ jobs:
           cd solar2d-source\platform\windows
           call UpdateFileVersions.bat %BUILD_NUMBER%
 
-      - name: Build Solar2D x86
+      - name: Build Solar2D
         shell: cmd
         run: |
           cd solar2d-source\platform\windows
@@ -113,52 +113,29 @@ jobs:
           devenv "Corona.Simulator.sln" /build "Release|Win32"
           devenv "CoronaBuilder.sln" /build "Release|Win32"
 
-      - name: Build Solar2D x64 (if supported)
-        shell: cmd
-        run: |
-          cd solar2d-source\platform\windows
-          REM Try Visual Studio's x64 environment directly
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          devenv "Corona.Shell.sln" /rebuild "Release|x64" || echo "x64 build not supported"
-          devenv "Corona.Simulator.sln" /build "Release|x64" || echo "x64 build not supported"  
-          devenv "CoronaBuilder.sln" /build "Release|x64" || echo "x64 build not supported"
-
       - name: Package Solar2D for ZIP distribution
         shell: bash
         run: |
           cd solar2d-source
           mkdir -p output
           
-          # Package x86 version
-          mkdir -p staging-x86/Solar2D
+          # Package Solar2D
+          mkdir -p staging/Solar2D
           if [ -d "platform/windows/Bin" ]; then
-            cp -r platform/windows/Bin/* staging-x86/Solar2D/
-            rm -f staging-x86/Solar2D/*.msi
+            cp -r platform/windows/Bin/* staging/Solar2D/
+            rm -f staging/Solar2D/*.msi
             if [ -d "docs" ]; then
-              cp -r docs staging-x86/Solar2D/
+              cp -r docs staging/Solar2D/
             fi
-            cd staging-x86
+            cd staging
             7z a -tzip "../output/Solar2D-Windows-x86-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip" Solar2D/*
-            cd ..
-          fi
-          
-          # Package x64 version (if different binaries exist)
-          mkdir -p staging-x64/Solar2D
-          if [ -d "platform/windows/Bin" ]; then
-            cp -r platform/windows/Bin/* staging-x64/Solar2D/
-            rm -f staging-x64/Solar2D/*.msi
-            if [ -d "docs" ]; then
-              cp -r docs staging-x64/Solar2D/
-            fi
-            cd staging-x64
-            7z a -tzip "../output/Solar2D-Windows-x64-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip" Solar2D/*
             cd ..
           fi
 
       - name: Upload Solar2D Windows artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Solar2D-Windows-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}
+          name: Solar2D-Windows-x86-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}
           path: solar2d-source/output/*.zip
 
       - name: Create Release
@@ -176,9 +153,8 @@ jobs:
             Padded build: ${{ env.PADDED_BUILD }}
             Commit: ${{ github.sha }}
             
-            **Downloads:**
+            **Download:**
             - Windows x86 (32-bit): `Solar2D-Windows-x86-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip`
-            - Windows x64 (64-bit): `Solar2D-Windows-x64-${{ env.YEAR }}.${{ env.BUILD_NUMBER }}.zip`
             
             This build includes:
             - Solar2D SDK and tools
